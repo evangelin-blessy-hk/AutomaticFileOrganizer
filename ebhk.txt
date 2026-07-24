@@ -1,0 +1,173 @@
+----------------------------
+VERSION 0
+----------------------------
+
+import  os
+from os import path
+import  shutil as su
+
+# Folder to organize
+source_folder = r"F:\testing"
+
+# Get a list of all files in the source folder
+files = os.listdir(source_folder)
+
+# Loop through each file in the source folder
+for  filename in files:
+
+    if filename.endswith(".jpeg") or filename.endswith(".png") or filename.endswith(".jpg"):
+        # image_folder = source_folder + "\\Images"
+        image_folder = os.path.join(source_folder, "Images")
+        if not os.path.exists(image_folder):
+            os.mkdir(image_folder)
+        # su.move(src=source_folder + "\\" + file, dst=image_folder + "\\" + file)
+        su.move(src=os.path.join(source_folder, filename), dst=os.path.join(image_folder, filename))
+        # print ("Moved" + filename + ".")
+        print(f"Moved {filename}.")
+
+    elif filename.endswith(".mp3") or filename.endswith(".wav"):
+        # audio_folder = source_folder + "\\Audio"
+        audio_folder = os.path.join(source_folder, "Audio")    
+        if not os.path.exists(audio_folder):
+            os.mkdir(audio_folder)
+        # su.move(src=source_folder + "\\" + file, dst=audio_folder + "\\" + file)
+        su.move(src=os.path.join(source_folder, filename), dst=os.path.join(audio_folder, filename))   
+        print(f"Moved {filename}.")
+
+    elif filename.endswith(".mp4") or filename.endswith(".mkv"):
+        # video_folder = source_folder + "\\Videos"
+        video_folder = os.path.join(source_folder, "Videos")   
+        if not os.path.exists(video_folder):
+            os.mkdir(video_folder)
+        # su.move(src=source_folder + "\\" + file, dst=video_folder + "\\" + file)
+        su.move(src=os.path.join(source_folder, filename), dst=os.path.join(video_folder, filename))
+        print(f"Moved {filename}.")
+
+    elif filename.endswith(".docx") or filename.endswith(".txt"):
+        # doc_folder = source_folder + "\\Documents"
+        doc_folder = os.path.join(source_folder, "Documents")
+        if not os.path.exists(doc_folder):
+            os.mkdir(doc_folder)
+        # su.move(src=source_folder + "\\" + file, dst=doc_folder + "\\" + file)
+        su.move(src=os.path.join(source_folder, filename), dst=os.path.join(doc_folder, filename))
+        print(f"Moved {filename}.")
+
+    elif filename.endswith(".zip") or filename.endswith(".rar"):
+        # zip_folder = source_folder + "\\Compressed"
+        zip_folder = os.path.join(source_folder, "Compressed") 
+        if not os.path.exists(zip_folder):
+            os.mkdir(zip_folder)
+        # su.move(src=source_folder + "\\" + file, dst=zip_folder + "\\" + file)
+        su.move(src=os.path.join(source_folder, filename), dst=os.path.join(zip_folder, filename)) 
+        print(f"Moved {filename}.")
+
+    elif filename.endswith(".exe"):
+        # exe_folder = source_folder + "\\Executables"
+        exe_folder = os.path.join(source_folder, "Executables")    
+        if not os.path.exists(exe_folder):
+            os.mkdir(exe_folder)
+        # su.move(src=source_folder + "\\" + file, dst=exe_folder + "\\" + file)
+        su.move(src=os.path.join(source_folder, filename), dst=os.path.join(exe_folder, filename))
+        print(f"Moved {filename}.")
+
+    elif filename.endswith(".excel") or filename.endswith(".csv"):
+        # excel_folder = source_folder + "\\Excel"
+        excel_folder = os.path.join(source_folder, "Excel")
+        if not os.path.exists(excel_folder):
+            os.mkdir(excel_folder)
+        # su.move(src=source_folder + "\\" + file, dst=excel_folder + "\\" + file)
+        su.move(src=os.path.join(source_folder, filename), dst=os.path.join(excel_folder, filename))
+        print(f"Moved {filename}.")
+
+    elif if filename.endswith(".pdf"):
+        pdf_folder = os.path.join(source_folder, "PDFs")
+
+        if not os.path.exists(pdf_folder):
+            os.mkdir(pdf_folder)
+        
+        su.move(
+            src=os.path.join(source_folder, filename), 
+            dst=os.path.join(pdf_folder, filename)
+            )
+        
+        print(f"Moved {filename}.")
+           
+--------------------------------------------------------------
+✅ Version 1.0 (Upload this)
+
+Your current version is clean enough.
+
+Repository structure:
+
+AutomaticFileOrganizer/
+│
+├── main.py
+├── README.md
+├── .gitignore
+├── LICENSE
+└── requirements.txt (optional for now)
+
+Tag it mentally as Version 1.0.
+------------------------------
+
+🚀 Version 1.1
+
+Improve robustness.
+
+For example:
+
+Ignore temporary Office files (~$)
+Ignore directories
+Handle files without extensions
+Handle permission errors
+Handle duplicate filenames
+------------------------------------------
+🖥 Version 2.0
+
+Build the GUI.
+
+Instead of editing
+
+SOURCE_FOLDER = ...
+
+the user clicks
+
+Choose Folder
+
+↓
+
+Selects a folder.
+
+↓
+
+Clicks
+
+Organize Files
+
+This makes your project usable by anyone.
+---------------------------------------
+
+📦 Version 3.0
+
+Convert it into
+
+AutomaticFileOrganizer.exe
+
+Anyone can double-click it.
+
+No Python installation required.
+-------------------------------------------
+
+⭐ Version 4.0 (Advanced)
+
+Some really cool features:
+
+Drag & Drop a folder onto the application.
+Dark mode.
+Progress bar.
+Number of files moved.
+Undo operation.
+Custom file categories.
+Recursive folder organization.
+Log file.
+------------------------------------
