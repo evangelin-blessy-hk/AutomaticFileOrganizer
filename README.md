@@ -29,7 +29,18 @@ A Python automation tool that organizes files into folders based on their file e
 
 ```bash
 python main.py
+
 ```
+
+### Roadmap
+------------------------------------
+
+- [x] Version 1.0 - Basic file organization
+- [ ] Version 1.1 - Error handling
+- [ ] Version 2.0 - GUI
+- [ ] Version 3.0 - Executable
+- [ ] Version 4.0 - Advanced features
+
 
 ## Author
 
