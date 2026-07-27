@@ -10,7 +10,7 @@ import  os
 import  shutil as su
 
 # Folder to organize
-SOURCE_FOLDER = r"F:\testing"
+SOURCE_FOLDER = input("Enter the path of the folder to organize: ")
 
 # Get a list of all files in the source folder
 files = os.listdir(SOURCE_FOLDER)
@@ -41,14 +41,52 @@ FILE_CATEGORIES = {
     ".csv": "Excel" 
 }
 
+# Track file statistics
+scanned_folders = 0  # Number of folders found
+scanned_files = 0  # Number of files found
+moved_files = 0    # Files successfully organized
+skipped_files = 0  # Files that were not organized due to unrecognized extensions
+
+# Iterate through each file in the source folder
 for filename in files:
-    file_extension = os.path.splitext(filename)[1]  # Get the file extension (name, extension) as a tuple and take the second element
+
+    # Skip hidden files and temporary files (starting with '.' or '~')
+    if filename.startswith('.') or filename.startswith('~'):
+        continue
+
+    # Check if the item is a directory or a file
+    if os.path.isdir(os.path.join(SOURCE_FOLDER, filename)):
+        scanned_folders += 1
+        # Skip directories, we only want to organize files
+        continue    
+    else:   
+        scanned_files += 1
+
+    # splitext() returns (filename, extension); [1] gets the extension
+    file_extension = os.path.splitext(filename)[1]  
+
+    # Check if the file extension is in the defined categories
     if file_extension in FILE_CATEGORIES:
         folder_name = FILE_CATEGORIES[file_extension]
         folder_path = os.path.join(SOURCE_FOLDER, folder_name)
+
+        # Create the folder if it doesn't exist
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
             print(f"Created folder: {folder_name}")
-        move_file(SOURCE_FOLDER, filename, folder_path)
 
-print("-----------File organization complete.-----------")
+        # Move the file to the appropriate folder
+        move_file(SOURCE_FOLDER, filename, folder_path)
+        moved_files += 1
+
+    # If the file extension is not recognized, skip the file
+    else:
+        skipped_files += 1
+
+print("\n----------- Summary -----------")
+print(f"Scanned Files: {scanned_files}")
+print(f"Scanned Folders: {scanned_folders}")
+print(f"Moved: {moved_files}")
+print(f"Skipped: {skipped_files}")
+
+print("---------File organization complete.---------\n")
