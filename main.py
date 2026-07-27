@@ -15,6 +15,12 @@ SOURCE_FOLDER = input("Enter the path of the folder to organize: ")
 # Get a list of all files in the source folder
 files = os.listdir(SOURCE_FOLDER)
 
+# Track file statistics
+scanned_folders = 0  # Number of folders found
+scanned_files = 0  # Number of files found
+moved_files = 0    # Files successfully organized
+skipped_files = 0  # Files that were not organized due to unrecognized extensions
+
 # Move a file to the specified folder
 def move_file(source_folder, filename, folder_path):
     su.move(
@@ -40,12 +46,6 @@ FILE_CATEGORIES = {
     ".xlsx": "Excel",
     ".csv": "Excel" 
 }
-
-# Track file statistics
-scanned_folders = 0  # Number of folders found
-scanned_files = 0  # Number of files found
-moved_files = 0    # Files successfully organized
-skipped_files = 0  # Files that were not organized due to unrecognized extensions
 
 # Iterate through each file in the source folder
 for filename in files:
@@ -75,9 +75,14 @@ for filename in files:
             os.mkdir(folder_path)
             print(f"Created folder: {folder_name}")
 
-        # Move the file to the appropriate folder
-        move_file(SOURCE_FOLDER, filename, folder_path)
-        moved_files += 1
+        # Handling duplicate files by checking if the file already exists in the destination folder
+        if os.path.exists(os.path.join(folder_path, filename)):
+            print(f"File {filename} already exists in {folder_path}. Skipping.")
+            skipped_files += 1
+        else:
+            # Move the file to the appropriate folder
+            move_file(SOURCE_FOLDER, filename, folder_path)
+            moved_files += 1
 
     # If the file extension is not recognized, skip the file
     else:
