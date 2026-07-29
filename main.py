@@ -9,26 +9,7 @@ into its appropriate folder.
 import  os
 import  shutil as su
 
-# Folder to organize
-SOURCE_FOLDER = input("Enter the path of the folder to organize: ")
-
-# Get a list of all files in the source folder
-files = os.listdir(SOURCE_FOLDER)
-
-# Track file statistics
-scanned_folders = 0  # Number of folders found
-scanned_files = 0  # Number of files found
-moved_files = 0    # Files successfully organized
-skipped_files = 0  # Files that were not organized due to unrecognized extensions
-
-# Move a file to the specified folder
-def move_file(source_folder, filename, folder_path):
-    su.move(
-        src=os.path.join(source_folder, filename), 
-        dst=os.path.join(folder_path, filename)
-        )
-    print(f"Moved {filename} to {folder_path}.")
-
+# Define file categories based on their extensions
 FILE_CATEGORIES = {
     ".pdf": "PDFs",
     ".jpeg": "Images",
@@ -47,51 +28,111 @@ FILE_CATEGORIES = {
     ".csv": "Excel" 
 }
 
-# Iterate through each file in the source folder
-for filename in files:
+# Track file statistics
+stats = {
+    "scanned": 0,
+    "moved": 0,
+    "skipped": 0,  # hidden files, temp files, unrecognized extensions, duplicates
+    "errors": 0    # permission denied, disk removed, unexpeccted exceptions
+}
 
-    # Skip hidden files and temporary files (starting with '.' or '~')
-    if filename.startswith('.') or filename.startswith('~'):
-        continue
+# Folder to organize
+SOURCE_FOLDER = input("Enter the path of the folder to organize: ")
 
-    # Check if the item is a directory or a file
-    if os.path.isdir(os.path.join(SOURCE_FOLDER, filename)):
-        scanned_folders += 1
-        # Skip directories, we only want to organize files
-        continue    
-    else:   
-        scanned_files += 1
-
-    # splitext() returns (filename, extension); [1] gets the extension
-    file_extension = os.path.splitext(filename)[1]  
-
-    # Check if the file extension is in the defined categories
-    if file_extension in FILE_CATEGORIES:
-        folder_name = FILE_CATEGORIES[file_extension]
-        folder_path = os.path.join(SOURCE_FOLDER, folder_name)
-
-        # Create the folder if it doesn't exist
-        if not os.path.exists(folder_path):
-            os.mkdir(folder_path)
-            print(f"Created folder: {folder_name}")
-
-        # Handling duplicate files by checking if the file already exists in the destination folder
-        if os.path.exists(os.path.join(folder_path, filename)):
-            print(f"File {filename} already exists in {folder_path}. Skipping.")
-            skipped_files += 1
-        else:
-            # Move the file to the appropriate folder
-            move_file(SOURCE_FOLDER, filename, folder_path)
-            moved_files += 1
-
-    # If the file extension is not recognized, skip the file
+# Check if the source folder exists
+def check_source_folder(SOURCE_FOLDER, stats):
+    if SOURCE_FOLDER == "":
+        print("No folder path provided. Exiting.")
+        exit()
+    elif not os.path.exists(SOURCE_FOLDER):
+        print(f"The folder '{SOURCE_FOLDER}' does not exist. Exiting.")
+        exit()
     else:
-        skipped_files += 1
+        # Get a list of all files in the source folder
+        files = os.listdir(SOURCE_FOLDER)
+        organize_files(SOURCE_FOLDER, files, stats)
+
+# Create a folder if it doesn't exist
+def create_folder(folder_path, folder_name):
+    try:
+        os.mkdir(folder_path)
+        print(f"Created folder: {folder_name}")
+        return True
+    except PermissionError:
+        print(f"Permission denied while creating folder {folder_name}. Skipping.")
+        return False
+    except Exception as error:
+        print(f"Error creating folder: {error}")
+        return False
+
+# Move a file to the specified folder
+def move_file(source_folder, filename, folder_path,  stats):
+    try:
+        su.move(
+            src=os.path.join(source_folder, filename), 
+            dst=os.path.join(folder_path, filename)
+            )
+        print(f"Moved {filename} to {folder_path}.")
+        stats["moved"] += 1
+        
+    except PermissionError:
+        print(f"Permission denied while moving file {filename}. Skipping.")
+        stats["errors"] += 1
+    except Exception as error:
+        print(f"Error moving file {filename}: {error}") 
+        stats["errors"] += 1
+
+# Organize files in the source folder based on their extensions
+def organize_files(SOURCE_FOLDER,files, stats=stats):
+   
+    # Iterate through each file in the source folder
+    for filename in files:
+
+        # Skip hidden files and temporary files (starting with '.' or '~')
+        if filename.startswith('.') or filename.startswith('~'):
+            continue
+
+        # Check if the item is a directory or a file
+        if os.path.isdir(os.path.join(SOURCE_FOLDER, filename)):
+            continue    
+        else:   
+            stats["scanned"] += 1
+
+        # splitext() returns (filename, extension); [1] gets the extension
+        file_extension = os.path.splitext(filename)[1]  
+
+        # Check if the file extension is in the defined categories
+        if file_extension in FILE_CATEGORIES:
+            folder_name = FILE_CATEGORIES[file_extension]
+            folder_path = os.path.join(SOURCE_FOLDER, folder_name)
+
+            # Create the folder if it doesn't exist
+            if not os.path.exists(folder_path):
+                if not create_folder(folder_path, folder_name):
+                    stats["skipped"] += 1
+                    print(f"Error creating folder {folder_name}. Skipping {filename}.")
+                    continue  # Skip moving the file if folder creation failed
+
+            # Handling duplicate files by checking if the file already exists in the destination folder
+            if os.path.exists(os.path.join(folder_path, filename)):
+                print(f"File {filename} already exists in {folder_path}. Skipping.")
+                stats["skipped"] += 1
+            else:
+                # Move the file to the appropriate folder
+                move_file(SOURCE_FOLDER, filename, folder_path, stats)
+
+        # If the file extension is not recognized, skip the file
+        else:
+            stats["skipped"] += 1
+            print(f"File {filename} has an unrecognized extension. Skipping.")
+
+# Calling the function to check the source folder and start organizing files
+check_source_folder(SOURCE_FOLDER, stats)
 
 print("\n----------- Summary -----------")
-print(f"Scanned Files: {scanned_files}")
-print(f"Scanned Folders: {scanned_folders}")
-print(f"Moved: {moved_files}")
-print(f"Skipped: {skipped_files}")
+print(f"Scanned Files: {stats['scanned']}")
+print(f"Moved: {stats['moved']}")
+print(f"Skipped: {stats['skipped']}")
+print(f"Errors: {stats['errors']}")
 
 print("---------File organization complete.---------\n")

@@ -25,7 +25,6 @@ Build a Python script that automatically organizes files into folders based on f
 ---
 
 ## Version 1.0 - Refactoring
-
 ### Improvements
 - Added move_file() function.
 - Replaced repeated if-elif blocks with a dictionary.
@@ -33,7 +32,6 @@ Build a Python script that automatically organizes files into folders based on f
 - Used SOURCE_FOLDER constant.
 - Added documentation and comments.
 - Cleaner folder creation.
-
 ### Result
 The code became much shorter, easier to read, and easier to extend.
 
@@ -42,10 +40,21 @@ The code became much shorter, easier to read, and easier to extend.
 ## Future Versions
 
 ### Version 1.1
-- Ignore temporary Office files.
-- Ignore directories.
-- Handle duplicate filenames.
-- Handle permission errors.
+[x] Ignore temporary Office files.
+[x] Ignore directories.
+[x] Handle duplicate filenames.
+[x] Users can input folder to organize
+
+### Version 1.2 – Error Handling
+### Planned improvements
+[x] Handle invalid source folder (FileNotFoundError)
+[x] Handle permission denied while moving files (PermissionError)
+[x] Handle duplicate filenames in destination folder
+[x] Handle files currently open by another application
+[x] Handle files being used by another process
+[x] Handle invalid destination folder
+[x] Handle unexpected errors gracefully (Exception)
+[x] Display meaningful error messages instead of crashing
 
 ### Version 2.0
 GUI using Tkinter.
