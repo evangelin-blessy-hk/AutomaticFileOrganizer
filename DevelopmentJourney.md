@@ -57,11 +57,11 @@ The code became much shorter, easier to read, and easier to extend.
 [x] Display meaningful error messages instead of crashing
 
 ### Version 2.0 - GUI using Tkinter.
-[] 2.0.1 Create a window
-[] 2.0.2 Add labels
-[] 2.0.3 Add browse button: User to choose source folder 
-[] 2.0.4 Connect browse button to textbox
-[] 2.0.5 Add organize files vutton
+[x] 2.0.1 Create a window
+[x] 2.0.2 Add labels
+[x] 2.0.3 Add browse button: User to choose source folder 
+[x] 2.0.4 Connect browse button to textbox
+[] 2.0.5 Add organize files button
 [] 2.0.6 When clicked call organize_files()
 [] 2.0.7 Display files status while moving,etc
 [] 2.0.8 Show popup with summary
