@@ -28,23 +28,14 @@ stats = {
     "errors": 0    # permission denied, disk removed, unexpeccted exceptions
 }
 
-# Folder to organize
-# SOURCE_FOLDER = input("Enter the path of the folder to organize: ")
-# SOURCE_FOLDER = app.selected_folder
-
 # Check if the source folder exists
-def check_source_folder(SOURCE_FOLDER, stats):
-    if SOURCE_FOLDER == "":
-        print("No folder path provided. Exiting.")
-        exit()
-    elif not os.path.exists(SOURCE_FOLDER):
+def check_source_folder(SOURCE_FOLDER):
+
+    # Check if the source folder exists
+    if not os.path.exists(SOURCE_FOLDER):
         print(f"The folder '{SOURCE_FOLDER}' does not exist. Exiting.")
         exit()
-    else:
-        # Get a list of all files in the source folder
-        files = os.listdir(SOURCE_FOLDER)
-        organize_files(SOURCE_FOLDER, files, stats)
-
+    
 # Create a folder if it doesn't exist
 def create_folder(folder_path, folder_name):
     try:
@@ -77,7 +68,10 @@ def move_file(source_folder, filename, folder_path,  stats):
 
 
 # Organize files in the source folder based on their extensions
-def organize_files(SOURCE_FOLDER,files, stats=stats):
+def organize_files(SOURCE_FOLDER, stats=stats):
+
+    # Get a list of all files in the source folder
+    files = os.listdir(SOURCE_FOLDER)
    
     # Iterate through each file in the source folder
     for filename in files:
@@ -119,14 +113,3 @@ def organize_files(SOURCE_FOLDER,files, stats=stats):
         else:
             stats["skipped"] += 1
             print(f"File {filename} has an unrecognized extension. Skipping.")
-
-    summarize_statistics(stats)
-
-def summarize_statistics(stats):
-    print("\n----------- Summary -----------")
-    print(f"Scanned Files: {stats['scanned']}")
-    print(f"Moved: {stats['moved']}")
-    print(f"Skipped: {stats['skipped']}")
-    print(f"Errors: {stats['errors']}")
-
-    print("---------File organization complete.---------\n")

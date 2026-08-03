@@ -7,7 +7,7 @@ class FileOrganizerGUI:
     def __init__(self):
         self.window = tk.Tk()
         self.window.title("Automatic File Organizer")
-        self.window.geometry("600x400")
+        self.window.geometry("600x600")
 
         # Create a label for the title
         self.title_label = tk.Label(
@@ -40,13 +40,58 @@ class FileOrganizerGUI:
     # Function to select a folder on the user's computer
     def select_folder(self):
         folder = filedialog.askdirectory()
+        # Check if user selected a folder or canceled the dialog
         if folder:
             self.selected_folder = folder
             self.selected_folder_label.config(
                 text=f"Selected folder: {folder}"
                 )
-            organizer.check_source_folder(folder, organizer.stats)
+            organizer.check_source_folder(self.selected_folder)
+            self.start_organizing()
+        else:
+            self.selected_folder_label.config(
+                text="No folder selected. Exiting."
+                )
+            self.window.destroy()
+
+    def reset_stats(self):
+        organizer.stats = {
+            "scanned": 0,
+            "moved": 0,
+            "skipped": 0,
+            "errors": 0
+        }
+            
+    def start_organizing(self):
+        self.selected_folder_label.config(
+            text=f"Organizing files in: {self.selected_folder}"
+        )
+        self.select_organize_button = tk.Button(
+            self.window,
+            text="Start Organizing",
+            command=self.organize_and_summarize
+        )
+        self.select_organize_button.pack(pady=20)
         
+
+    def display_summary(self):
+        summary = (
+            f"Files scanned: {organizer.stats['scanned']}\n"
+            f"Files moved: {organizer.stats['moved']}\n"
+            f"Files skipped: {organizer.stats['skipped']}\n"
+            f"Errors encountered: {organizer.stats['errors']}"
+        )
+        self.summary_label = tk.Label(
+            self.window, 
+            text=summary
+        )
+        self.summary_label.pack(pady=10)
+
+    def organize_and_summarize(self):
+        self.reset_stats()
+        organizer.organize_files(self.selected_folder, organizer.stats)
+        self.display_summary()
+    
 
     def run(self):
         self.window.mainloop()
