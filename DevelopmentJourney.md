@@ -66,6 +66,29 @@ The code became much shorter, easier to read, and easier to extend.
 [x] 2.0.7 Display files status while moving,etc
 [x] 2.0.8 Show popup with summary
 
+### Problems Faced
+
+1. Summary displayed too early
+Problem: Statistics were shown before file organization completed.
+Solution: Created an organize_and_summarize() function to display the summary only after organizing.
+
+2. Statistics accumulated across runs
+Problem: Counters continued from the previous run.
+Solution: Added a reset_stats() function before each organization.
+
+3. Understanding exception handling
+Problem: While debugging, it appeared that both the try and except blocks were executing.
+Learning: Realized that the debugger's Step Into can be misleading when entering library functions. The except block only executes if an exception is actually raised.
+
+4. Handling open files
+Problem: An open PDF in Adobe Acrobat produced a PermissionError, yet a copy appeared in the destination folder.
+Cause: shutil.move() copied the file but couldn't delete the original because it was in use.
+Solution: Improved the error message to clearly explain this behavior.
+
+5. Project structure
+Problem: Managing everything in a single file became difficult.
+Solution: Refactored the project into main.py, gui.py, and organizer.py.
+
 ### Version 3.0
 Package into an executable using PyInstaller.
 

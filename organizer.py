@@ -60,7 +60,12 @@ def move_file(source_folder, filename, folder_path,  stats):
         stats["moved"] += 1
         
     except PermissionError:
-        print(f"Permission denied while moving file {filename}. Skipping.")
+        print(
+            f"Permission denied while moving file {filename}. "
+            "The file was copied to the destination, "
+            "but the original could not be removed "
+            "because it is currently open in another application."
+            )
         stats["errors"] += 1
     except Exception as error:
         print(f"Error moving file {filename}: {error}") 
