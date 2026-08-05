@@ -89,6 +89,14 @@ Solution: Improved the error message to clearly explain this behavior.
 Problem: Managing everything in a single file became difficult.
 Solution: Refactored the project into main.py, gui.py, and organizer.py.
 
+### Version 2.1 - Improve the GUI.
+
+[] Progress bar
+[] Status label ("Organizing...")
+[] Scrollable log window
+[] Better colors
+[] Better spacing
+
 ### Version 3.0
 Package into an executable using PyInstaller.
 

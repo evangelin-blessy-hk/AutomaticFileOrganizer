@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 import organizer
 
 class FileOrganizerGUI:
@@ -36,6 +36,14 @@ class FileOrganizerGUI:
             )
         self.selected_folder_label.pack(pady=10)
 
+        self.select_organize_button = tk.Button(
+                    self.window,
+                    text="Start Organizing",
+                    command=self.organize_and_summarize,
+                    state="disabled"
+                )
+        self.select_organize_button.pack(pady=20)
+
 
     # Function to select a folder on the user's computer
     def select_folder(self):
@@ -66,16 +74,15 @@ class FileOrganizerGUI:
         self.selected_folder_label.config(
             text=f"Organizing files in: {self.selected_folder}"
         )
-        self.select_organize_button = tk.Button(
-            self.window,
-            text="Start Organizing",
-            command=self.organize_and_summarize
-        )
-        self.select_organize_button.pack(pady=20)
+        self.select_organize_button.config(state="normal")
+
+    def disable_organize_button(self):
+        self.select_organize_button.config(state="disabled")
         
 
     def display_summary(self):
         summary = (
+            f"Organization Summary in {self.selected_folder}:\n"
             f"Files scanned: {organizer.stats['scanned']}\n"
             f"Files moved: {organizer.stats['moved']}\n"
             f"Files skipped: {organizer.stats['skipped']}\n"
@@ -86,10 +93,15 @@ class FileOrganizerGUI:
             text=summary
         )
         self.summary_label.pack(pady=10)
+        messagebox.showinfo(
+            "Completed",
+            "Files organized successfully!"
+        )
 
     def organize_and_summarize(self):
         self.reset_stats()
         organizer.organize_files(self.selected_folder, organizer.stats)
+        self.disable_organize_button()
         self.display_summary()
     
 

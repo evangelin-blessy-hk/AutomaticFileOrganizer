@@ -38,7 +38,8 @@ python main.py
 - [x] Version 1.0 - Basic file organization
 - [x] Version 1.1 - Improved robustness (skip folders, temporary files, duplicates, etc)
 - [x] Version 1.2 - Error handling
-- [ ] Version 2.0 - GUI
+- [x] Version 2.0 - GUI
+- [ ] Version 2.1 - Improve the GUI
 - [ ] Version 3.0 - Executable
 - [ ] Version 4.0 - Advanced features
 
