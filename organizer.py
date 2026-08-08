@@ -29,51 +29,58 @@ stats = {
 }
 
 # Check if the source folder exists
-def check_source_folder(SOURCE_FOLDER):
+def check_source_folder(SOURCE_FOLDER, log_callback):
 
     # Check if the source folder exists
     if not os.path.exists(SOURCE_FOLDER):
-        print(f"The folder '{SOURCE_FOLDER}' does not exist. Exiting.")
+        log_callback(f"The folder '{SOURCE_FOLDER}' does not exist. Exiting.")
+        # print(f"The folder '{SOURCE_FOLDER}' does not exist. Exiting.")
         exit()
     
 # Create a folder if it doesn't exist
-def create_folder(folder_path, folder_name):
+def create_folder(folder_path, folder_name,log_callback):
     try:
         os.mkdir(folder_path)
-        print(f"Created folder: {folder_name}")
+        log_callback(f"Created folder: {folder_name}")
+        # print(f"Created folder: {folder_name}")
         return True
     except PermissionError:
-        print(f"Permission denied while creating folder {folder_name}. Skipping.")
+        log_callback(f"Permission denied while creating folder {folder_name}. Skipping.")
+        # print(f"Permission denied while creating folder {folder_name}. Skipping.")
         return False
     except Exception as error:
-        print(f"Error creating folder: {error}")
+        log_callback(f"Error creating folder {folder_name}: {error}")
+        # print(f"Error creating folder: {error}")
         return False
 
 # Move a file to the specified folder
-def move_file(source_folder, filename, folder_path,  stats):
+def move_file(source_folder, filename, folder_path,  stats, log_callback):
     try:
         su.move(
             src=os.path.join(source_folder, filename), 
             dst=os.path.join(folder_path, filename)
             )
-        print(f"Moved {filename} to {folder_path}.")
+        log_callback(f"Moved {filename} to {folder_path}.")
+        # print(f"Moved {filename} to {folder_path}.")
         stats["moved"] += 1
         
     except PermissionError:
-        print(
+        log_callback(
             f"Permission denied while moving file {filename}. "
             "The file was copied to the destination, "
             "but the original could not be removed "
             "because it is currently open in another application."
             )
         stats["errors"] += 1
+        
     except Exception as error:
-        print(f"Error moving file {filename}: {error}") 
+        log_callback(f"Error moving file {filename}: {error}")
+        # print(f"Error moving file {filename}: {error}") 
         stats["errors"] += 1
 
 
 # Organize files in the source folder based on their extensions
-def organize_files(SOURCE_FOLDER, stats=stats):
+def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None):
 
     # Get a list of all files in the source folder
     files = os.listdir(SOURCE_FOLDER)
@@ -101,20 +108,24 @@ def organize_files(SOURCE_FOLDER, stats=stats):
 
             # Create the folder if it doesn't exist
             if not os.path.exists(folder_path):
-                if not create_folder(folder_path, folder_name):
+                if not create_folder(folder_path, folder_name, log_callback):
                     stats["skipped"] += 1
-                    print(f"Error creating folder {folder_name}. Skipping {filename}.")
+                    log_callback(f"Error creating folder {folder_name}. Skipping {filename}.")
+                    # print(f"Error creating folder {folder_name}. Skipping {filename}.")
                     continue  # Skip moving the file if folder creation failed
 
             # Handling duplicate files by checking if the file already exists in the destination folder
             if os.path.exists(os.path.join(folder_path, filename)):
-                print(f"File {filename} already exists in {folder_path}. Skipping.")
+                log_callback(f"File {filename} already exists in {folder_path}. Skipping.")
+                # print(f"File {filename} already exists in {folder_path}. Skipping.")
                 stats["skipped"] += 1
             else:
                 # Move the file to the appropriate folder
-                move_file(SOURCE_FOLDER, filename, folder_path, stats)
+                move_file(SOURCE_FOLDER, filename, folder_path, stats, log_callback)
 
         # If the file extension is not recognized, skip the file
         else:
             stats["skipped"] += 1
-            print(f"File {filename} has an unrecognized extension. Skipping.")
+            log_callback(f"File {filename} has an unrecognized extension. Skipping.")
+            # print(f"File {filename} has an unrecognized extension. Skipping.")
+

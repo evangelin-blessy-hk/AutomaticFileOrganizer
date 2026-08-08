@@ -44,6 +44,9 @@ class FileOrganizerGUI:
                 )
         self.select_organize_button.pack(pady=20)
 
+        self.log_box = tk.Text(self.window, height=10, width=60)
+        self.log_box.pack(pady=10)
+
 
     # Function to select a folder on the user's computer
     def select_folder(self):
@@ -54,7 +57,7 @@ class FileOrganizerGUI:
             self.selected_folder_label.config(
                 text=f"Selected folder: {folder}"
                 )
-            organizer.check_source_folder(self.selected_folder)
+            organizer.check_source_folder(self.selected_folder, self.log_message)
             self.start_organizing()
         else:
             self.selected_folder_label.config(
@@ -98,13 +101,16 @@ class FileOrganizerGUI:
             "Files organized successfully!"
         )
 
+    def log_message(self, message):
+        # Create a label for the log message
+        self.log_box.insert(tk.END, message + "\n")
+        self.log_box.see(tk.END)  # Scroll to the end
+
     def organize_and_summarize(self):
         self.reset_stats()
-        organizer.organize_files(self.selected_folder, organizer.stats)
+        organizer.organize_files(self.selected_folder, organizer.stats, self.log_message)
         self.disable_organize_button()
         self.display_summary()
-    
 
     def run(self):
         self.window.mainloop()
-

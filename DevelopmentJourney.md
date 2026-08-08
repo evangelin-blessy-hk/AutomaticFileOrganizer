@@ -97,11 +97,19 @@ Solution: Refactored the project into main.py, gui.py, and organizer.py.
 [] Better colors
 [] Better spacing
 
-### Version 3.0
+### Version 3.0 - Package it
 Package into an executable using PyInstaller.
 
-### Version 4.0
-- Drag and drop
-- Progress bar
-- Undo
-- Custom categories
+[] Convert to .exe
+[] Custom icon
+[] Installer
+[] Ready for anyone to download
+
+### Version 4.0 - Real-world improvements
+
+[] Drag & Drop folder
+[] Recursive folder organization
+[] Undo last operation
+[] User-defined categories
+[] Settings saved automatically
+[] Dark mode
