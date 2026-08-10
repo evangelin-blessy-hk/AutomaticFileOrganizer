@@ -14,27 +14,27 @@ class FileOrganizerGUI:
             self.window, 
             text="Automatic File Organizer"
             )
-        self.title_label.config(font=("Arial", 24))
-        self.title_label.pack() 
+        self.title_label.config(font=("Arial", 15))
+        self.title_label.pack(pady=15) 
 
         self.select_folder_label = tk.Label(
             self.window, 
             text="Select a folder to organize:"
             )
-        self.select_folder_label.pack(pady=10)
+        self.select_folder_label.pack(pady=(15, 5))
 
         self.select_folder_button = tk.Button(
             self.window, 
             text="Select Folder", 
             command=self.select_folder
             )
-        self.select_folder_button.pack(pady=20)
+        self.select_folder_button.pack(pady=5)
 
         self.selected_folder_label = tk.Label(
             self.window, 
             text=""
             )
-        self.selected_folder_label.pack(pady=10)
+        self.selected_folder_label.pack(pady=5)
 
         self.select_organize_button = tk.Button(
                     self.window,
@@ -42,10 +42,10 @@ class FileOrganizerGUI:
                     command=self.organize_and_summarize,
                     state="disabled"
                 )
-        self.select_organize_button.pack(pady=20)
+        self.select_organize_button.pack(pady=(25,5))
 
         self.status_label = tk.Label(self.window, text="")
-        self.status_label.pack(pady=10)
+        self.status_label.pack(pady=5)
 
         self.progress_bar = ttk.Progressbar(
                     self.window,
@@ -53,10 +53,10 @@ class FileOrganizerGUI:
                     length=400,
                     mode="determinate"
                 )
-        self.progress_bar.pack(pady=10)
+        self.progress_bar.pack(pady=5)
 
         self.progress_label = tk.Label(self.window, text="0%")
-        self.progress_label.pack()
+        self.progress_label.pack(pady=1)
 
         # Create a frame to hold the log box and scrollbar
         self.log_frame = tk.Frame(self.window)
