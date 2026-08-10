@@ -53,14 +53,28 @@ class FileOrganizerGUI:
                     length=400,
                     mode="determinate"
                 )
-
         self.progress_bar.pack(pady=10)
 
         self.progress_label = tk.Label(self.window, text="0%")
         self.progress_label.pack()
 
-        self.log_box = tk.Text(self.window, height=10, width=80)
-        self.log_box.pack(pady=10)
+        # Create a frame to hold the log box and scrollbar
+        self.log_frame = tk.Frame(self.window)
+        self.log_frame.pack(pady=10)
+
+        # Create the log box
+        self.log_box = tk.Text(self.log_frame, height=10, width=80)
+        self.log_box.pack(side=tk.LEFT)
+
+        # Create the scrollbar
+        self.log_scrollbar = tk.Scrollbar(
+            self.log_frame,
+            command=self.log_box.yview
+        )
+        self.log_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Connect the log box to the scrollbar
+        self.log_box.config(yscrollcommand=self.log_scrollbar.set)
 
     def disable_organize_button(self):
         self.select_organize_button.config(state="disabled")
