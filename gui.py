@@ -7,7 +7,7 @@ class FileOrganizerGUI:
     def __init__(self):
         self.window = tk.Tk()
         self.window.title("Automatic File Organizer")
-        self.window.geometry("1000x800")
+        self.window.geometry("1000x700")
 
         # Create a label for the title
         self.title_label = tk.Label(
@@ -43,6 +43,9 @@ class FileOrganizerGUI:
                     state="disabled"
                 )
         self.select_organize_button.pack(pady=20)
+
+        self.status_label = tk.Label(self.window, text="")
+        self.status_label.pack(pady=10)
 
         self.progress_bar = ttk.Progressbar(
                     self.window,
@@ -106,7 +109,7 @@ class FileOrganizerGUI:
             text=f"Organizing files in: {self.selected_folder}"
         )
         self.select_organize_button.config(state="normal")
-
+        self.status_label.config(text="Status: Ready")
 
     def display_summary(self):
         summary = (
@@ -150,8 +153,10 @@ class FileOrganizerGUI:
         self.window.update_idletasks() # Update the GUI to reflect the progress bar change
 
     def organize_and_summarize(self):
+        self.status_label.config(text="Status: Organizing...")
         self.reset_stats()
         organizer.organize_files(self.selected_folder, organizer.stats, self.log_message, self.update_progress, self.set_progress_maximum)
+        self.status_label.config(text="Status: Organization Completed")
         self.disable_organize_button()
         self.display_summary()
 

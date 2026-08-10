@@ -92,7 +92,7 @@ Solution: Refactored the project into main.py, gui.py, and organizer.py.
 ### Version 2.1 - Improve the GUI.
 
 [x] Progress bar
-[] Status label ("Organizing...")
+[x] Status label ("Organizing...")
 [] Scrollable log window
 [] Better colors
 [] Better spacing
