@@ -7,7 +7,7 @@ class FileOrganizerGUI:
     def __init__(self):
         self.window = tk.Tk()
         self.window.title("Automatic File Organizer")
-        self.window.geometry("600x600")
+        self.window.geometry("1000x800")
 
         # Create a label for the title
         self.title_label = tk.Label(
@@ -56,27 +56,38 @@ class FileOrganizerGUI:
         self.progress_label = tk.Label(self.window, text="0%")
         self.progress_label.pack()
 
-        self.log_box = tk.Text(self.window, height=5, width=60)
+        self.log_box = tk.Text(self.window, height=10, width=80)
         self.log_box.pack(pady=10)
 
+    def disable_organize_button(self):
+        self.select_organize_button.config(state="disabled")
 
     # Function to select a folder on the user's computer
     def select_folder(self):
         folder = filedialog.askdirectory()
+
         # Check if user selected a folder or canceled the dialog
         if folder:
+            # If a folder is selected, update the label and enable the organize button
             self.selected_folder = folder
             self.selected_folder_label.config(
                 text=f"Selected folder: {folder}"
                 )
+            self.disable_organize_button()
+            self.progress_bar['value'] = 0  # Reset progress bar
+            self.progress_label.config(text="0%")
             organizer.check_source_folder(self.selected_folder, self.log_message)
             self.start_organizing()
-        else:
-            self.selected_folder_label.config(
-                text="No folder selected. Exiting."
-                )
-            self.window.destroy()
 
+        else:
+            # If the user cancels the folder selection, reset the label and progress bar
+            self.selected_folder_label.config(
+                text="No folder selected. Please select a folder."
+                )
+            self.progress_bar['value'] = 0  # Reset progress bar
+            self.progress_label.config(text="0%")
+
+    # Function to reset the statistics and progress bar
     def reset_stats(self):
         organizer.stats = {
             "scanned_files": 0,
@@ -85,16 +96,17 @@ class FileOrganizerGUI:
             "skipped": 0,
             "errors": 0
         }
-            
+        self.progress_bar['value'] = 0
+        self.log_box.insert(tk.END, "\n-------------------------------------------------------------------------\n")
+        self.log_box.see(tk.END)  # Scroll to the end
+
+    # Function to start organizing files in the selected folder
     def start_organizing(self):
         self.selected_folder_label.config(
             text=f"Organizing files in: {self.selected_folder}"
         )
         self.select_organize_button.config(state="normal")
 
-    def disable_organize_button(self):
-        self.select_organize_button.config(state="disabled")
-        
 
     def display_summary(self):
         summary = (
@@ -120,11 +132,12 @@ class FileOrganizerGUI:
         self.log_box.insert(tk.END, message + "\n")
         self.log_box.see(tk.END)  # Scroll to the end
 
+    # Function to update the progress bar for each file and percentage label
     def update_progress(self):
         self.progress_bar['value'] += 1
         current = self.progress_bar["value"]
         maximum = self.progress_bar["maximum"]
-       
+    
         percentage = (current / maximum) * 100
 
         self.progress_label.config(

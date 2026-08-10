@@ -138,3 +138,7 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callb
         
         progress_callback()  # Update progress after each file is processed
 
+    # If no files were scanned, log a message indicating that no files were found
+    if stats["scanned_files"] == 0:
+        log_callback(f"No files found in {SOURCE_FOLDER} to organize.")
+        print(f"No files found in {SOURCE_FOLDER} to organize.")
