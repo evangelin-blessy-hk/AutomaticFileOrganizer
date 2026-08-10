@@ -72,7 +72,7 @@ def move_file(source_folder, filename, folder_path,  stats, log_callback):
             "because it is currently open in another application."
             )
         stats["errors"] += 1
-        
+
     except Exception as error:
         log_callback(f"Error moving file {filename}: {error}")
         # print(f"Error moving file {filename}: {error}") 
@@ -80,10 +80,12 @@ def move_file(source_folder, filename, folder_path,  stats, log_callback):
 
 
 # Organize files in the source folder based on their extensions
-def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None):
+def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callback=None, total_files_callback=None):
 
     # Get a list of all files in the source folder
     files = os.listdir(SOURCE_FOLDER)
+
+    total_files_callback(len(files))  # Update the total number of files to process
    
     # Iterate through each file in the source folder
     for filename in files:
@@ -128,4 +130,6 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None):
             stats["skipped"] += 1
             log_callback(f"File {filename} has an unrecognized extension. Skipping.")
             # print(f"File {filename} has an unrecognized extension. Skipping.")
+        
+        progress_callback()  # Update progress after each file is processed
 

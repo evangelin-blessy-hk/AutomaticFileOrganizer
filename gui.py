@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 import organizer
 
 class FileOrganizerGUI:
@@ -43,6 +43,18 @@ class FileOrganizerGUI:
                     state="disabled"
                 )
         self.select_organize_button.pack(pady=20)
+
+        self.progress_bar = ttk.Progressbar(
+                    self.window,
+                    orient="horizontal",
+                    length=400,
+                    mode="determinate"
+                )
+
+        self.progress_bar.pack(pady=10)
+
+        self.progress_label = tk.Label(self.window, text="0%")
+        self.progress_label.pack()
 
         self.log_box = tk.Text(self.window, height=10, width=60)
         self.log_box.pack(pady=10)
@@ -106,9 +118,24 @@ class FileOrganizerGUI:
         self.log_box.insert(tk.END, message + "\n")
         self.log_box.see(tk.END)  # Scroll to the end
 
+    def update_progress(self):
+        self.progress_bar['value'] += 1
+        current = self.progress_bar["value"]
+        maximum = self.progress_bar["maximum"]
+        percentage = (current / maximum) * 100
+
+        self.progress_label.config(
+            text=f"{percentage:.0f}%"
+        )
+        self.window.update_idletasks() # Update the GUI to reflect the progress bar change
+
+    def set_progress_maximum(self, total_files):
+        self.progress_bar['maximum'] = total_files
+        self.window.update_idletasks() # Update the GUI to reflect the progress bar change
+
     def organize_and_summarize(self):
         self.reset_stats()
-        organizer.organize_files(self.selected_folder, organizer.stats, self.log_message)
+        organizer.organize_files(self.selected_folder, organizer.stats, self.log_message, self.update_progress, self.set_progress_maximum)
         self.disable_organize_button()
         self.display_summary()
 
