@@ -22,7 +22,8 @@ FILE_CATEGORIES = {
 
 # Track file statistics
 stats = {
-    "scanned": 0,
+    "scanned_files": 0,
+    "scanned_folders": 0,
     "moved": 0,
     "skipped": 0,  # hidden files, temp files, unrecognized extensions, duplicates
     "errors": 0    # permission denied, disk removed, unexpeccted exceptions
@@ -84,6 +85,7 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callb
 
     # Get a list of all files in the source folder
     files = os.listdir(SOURCE_FOLDER)
+    print(f"Total files found in {SOURCE_FOLDER}: {len(files)}")
 
     total_files_callback(len(files))  # Update the total number of files to process
    
@@ -92,13 +94,16 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callb
 
         # Skip hidden files and temporary files (starting with '.' or '~')
         if filename.startswith('.') or filename.startswith('~'):
+            progress_callback()
             continue
 
         # Check if the item is a directory or a file
         if os.path.isdir(os.path.join(SOURCE_FOLDER, filename)):
+            progress_callback()
+            stats["scanned_folders"] += 1
             continue    
         else:   
-            stats["scanned"] += 1
+            stats["scanned_files"] += 1
 
         # splitext() returns (filename, extension); [1] gets the extension
         file_extension = os.path.splitext(filename)[1]  

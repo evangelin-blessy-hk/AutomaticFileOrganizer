@@ -56,7 +56,7 @@ class FileOrganizerGUI:
         self.progress_label = tk.Label(self.window, text="0%")
         self.progress_label.pack()
 
-        self.log_box = tk.Text(self.window, height=10, width=60)
+        self.log_box = tk.Text(self.window, height=5, width=60)
         self.log_box.pack(pady=10)
 
 
@@ -79,7 +79,8 @@ class FileOrganizerGUI:
 
     def reset_stats(self):
         organizer.stats = {
-            "scanned": 0,
+            "scanned_files": 0,
+            "scanned_folders": 0,
             "moved": 0,
             "skipped": 0,
             "errors": 0
@@ -98,7 +99,8 @@ class FileOrganizerGUI:
     def display_summary(self):
         summary = (
             f"Organization Summary in {self.selected_folder}:\n"
-            f"Files scanned: {organizer.stats['scanned']}\n"
+            f"Files scanned: {organizer.stats['scanned_files']}\n"
+            f"Folders scanned: {organizer.stats['scanned_folders']}\n"
             f"Files moved: {organizer.stats['moved']}\n"
             f"Files skipped: {organizer.stats['skipped']}\n"
             f"Errors encountered: {organizer.stats['errors']}"
@@ -122,6 +124,7 @@ class FileOrganizerGUI:
         self.progress_bar['value'] += 1
         current = self.progress_bar["value"]
         maximum = self.progress_bar["maximum"]
+       
         percentage = (current / maximum) * 100
 
         self.progress_label.config(
