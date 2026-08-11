@@ -93,9 +93,26 @@ Solution: Refactored the project into main.py, gui.py, and organizer.py.
 
 [x] Progress bar
 [x] Status label ("Organizing...")
-[] Scrollable log window
+[x] Scrollable log window
 [] Better colors
-[] Better spacing
+[x] Better spacing
+
+#### Problems Faced & Lessons Learned
+
+- Learned how to use Tkinter's `Progressbar` to show the progress of file organization.
+- Learned how to update the progress bar as each file is processed.
+- Learned how to calculate and display the progress percentage.
+- Learned how to use callback functions to send messages from `organizer.py` to `gui.py`.
+- Learned how to display real-time file organization messages in the GUI.
+- Learned how to connect a `Text` widget with a `Scrollbar`.
+- Learned how to update labels dynamically using `.config()`.
+- Learned how to separate the GUI logic from the file-organizing logic.
+- Learned how to pass functions and data between different Python modules.
+- Faced an `AttributeError` because the log box was accessed before it was created. 
+  Learned that widgets must be initialized before they are used by callback functions.
+- Initially passed `organizer.organize_files(...)` directly to the button's `command`,
+  which caused the function to execute immediately instead of when the button was clicked.
+  Learned that Tkinter's `command` expects a function reference/callback
 
 ### Version 3.0 - Package it
 Package into an executable using PyInstaller.
