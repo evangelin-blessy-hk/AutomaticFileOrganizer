@@ -9,6 +9,5 @@ __pycache__/
 .vscode/
 
 # PyInstaller
-*.spec
 build/
 dist/

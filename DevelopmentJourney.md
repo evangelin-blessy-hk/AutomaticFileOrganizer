@@ -118,8 +118,8 @@ Solution: Refactored the project into main.py, gui.py, and organizer.py.
 Package into an executable using PyInstaller.
 
 [x] Convert to .exe
-[] Custom icon
-[] Installer
+[x] Custom icon
+[x] Installer
 [] Ready for anyone to download
 
 ### Version 4.0 - Real-world improvements
