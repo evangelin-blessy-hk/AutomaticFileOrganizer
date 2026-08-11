@@ -63,7 +63,7 @@ class FileOrganizerGUI:
         self.log_frame.pack(pady=10)
 
         # Create the log box
-        self.log_box = tk.Text(self.log_frame, height=10, width=80)
+        self.log_box = tk.Text(self.log_frame, height=8, width=80)
         self.log_box.pack(side=tk.LEFT)
 
         # Create the scrollbar
@@ -75,6 +75,25 @@ class FileOrganizerGUI:
 
         # Connect the log box to the scrollbar
         self.log_box.config(yscrollcommand=self.log_scrollbar.set)
+
+         # Create a frame to hold the summary box and scrollbar
+        self.summary_frame = tk.Frame(self.window)
+        self.summary_frame.pack(pady=10)
+
+         # Create the summary box
+        self.summary_box = tk.Text(self.summary_frame, height=10, width=40)
+        self.summary_box.pack(side=tk.LEFT)
+
+        # Create the scrollbar
+        self.summary_scrollbar = tk.Scrollbar(
+            self.summary_frame,
+            command=self.summary_box.yview
+        )
+        self.summary_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Connect the summary box to the scrollbar
+        self.summary_box.config(yscrollcommand=self.summary_scrollbar.set)
+
 
     def disable_organize_button(self):
         self.select_organize_button.config(state="disabled")
@@ -132,13 +151,12 @@ class FileOrganizerGUI:
             f"Folders scanned: {organizer.stats['scanned_folders']}\n"
             f"Files moved: {organizer.stats['moved']}\n"
             f"Files skipped: {organizer.stats['skipped']}\n"
-            f"Errors encountered: {organizer.stats['errors']}"
+            f"Errors encountered: {organizer.stats['errors']} \n"
         )
-        self.summary_label = tk.Label(
-            self.window, 
-            text=summary
-        )
-        self.summary_label.pack(pady=10)
+       
+        self.summary_box.insert(tk.END, "\n------------------------------------\n" + summary)  # Insert new summary
+        self.summary_box.see(tk.END)  # Scroll to the end
+
         messagebox.showinfo(
             "Completed",
             "Files organized successfully!"
