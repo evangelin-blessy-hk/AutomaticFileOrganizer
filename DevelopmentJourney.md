@@ -117,7 +117,7 @@ Solution: Refactored the project into main.py, gui.py, and organizer.py.
 ### Version 3.0 - Package it
 Package into an executable using PyInstaller.
 
-[] Convert to .exe
+[x] Convert to .exe
 [] Custom icon
 [] Installer
 [] Ready for anyone to download

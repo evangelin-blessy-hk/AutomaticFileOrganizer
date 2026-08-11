@@ -7,3 +7,8 @@ __pycache__/
 
 # VS Code
 .vscode/
+
+# PyInstaller
+*.spec
+build/
+dist/

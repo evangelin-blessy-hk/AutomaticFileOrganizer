@@ -59,7 +59,7 @@ class FileOrganizerGUI:
         self.progress_label.pack(pady=1)
 
         # Create a frame to hold the log box and scrollbar
-        self.log_frame = tk.Frame(self.window)
+        self.log_frame = tk.Frame(self.window, bd=2, relief=tk.GROOVE)
         self.log_frame.pack(pady=10)
 
         # Create the log box
@@ -77,7 +77,7 @@ class FileOrganizerGUI:
         self.log_box.config(yscrollcommand=self.log_scrollbar.set)
 
          # Create a frame to hold the summary box and scrollbar
-        self.summary_frame = tk.Frame(self.window)
+        self.summary_frame = tk.Frame(self.window, bd=2, relief=tk.GROOVE)
         self.summary_frame.pack(pady=10)
 
          # Create the summary box
