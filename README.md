@@ -15,6 +15,33 @@ A Python automation tool that organizes files into folders based on their file e
 - Organizes Executables
 - Organizes Excel files
 
+Suppose the user selects
+
+    F:\Downloads
+
+and we have:
+
+    Downloads/
+    ├── College/
+    │   ├── notes.pdf
+    │   └── project/
+    │       └── presentation.pptx
+    │
+    └── Personal/
+        └── photo.jpg
+
+Our application does:
+
+    Downloads/
+    ├── PDFs/
+    │   └── notes.pdf
+    │
+    ├── PowerPoint/
+    │   └── presentation.pptx
+    │
+    └── Images/
+        └── photo.jpg
+
 ## Technologies Used
 
 - Python
@@ -39,8 +66,8 @@ python main.py
 - [x] Version 1.1 - Improved robustness (skip folders, temporary files, duplicates, etc)
 - [x] Version 1.2 - Error handling
 - [x] Version 2.0 - GUI
-- [ ] Version 2.1 - Improve the GUI
-- [ ] Version 3.0 - Executable
+- [x] Version 2.1 - Improve the GUI
+- [x] Version 3.0 - Executable
 - [ ] Version 4.0 - Advanced features
 
 

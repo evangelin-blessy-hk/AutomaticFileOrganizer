@@ -29,6 +29,10 @@ stats = {
     "errors": 0    # permission denied, disk removed, unexpeccted exceptions
 }
 
+moved_files = []  # List to track moved files
+
+created_folders = []  # List to track created folders
+
 # Check if the source folder exists
 def check_source_folder(SOURCE_FOLDER, log_callback):
 
@@ -44,6 +48,7 @@ def create_folder(folder_path, folder_name,log_callback):
         os.mkdir(folder_path)
         log_callback(f"Created folder: {folder_name}")
         # print(f"Created folder: {folder_name}")
+        created_folders.append({"path": folder_path, "name": folder_name})
         return True
     except PermissionError:
         log_callback(f"Permission denied while creating folder {folder_name}. Skipping.")
@@ -64,6 +69,10 @@ def move_file(source_folder, filename, folder_path,  stats, log_callback):
         log_callback(f"Moved {filename} to {folder_path}.")
         # print(f"Moved {filename} to {folder_path}.")
         stats["moved"] += 1
+        moved_files.append({
+            "source": os.path.join(source_folder, filename), 
+            "destination": os.path.join(folder_path, filename)
+            })
         
     except PermissionError:
         log_callback(
@@ -142,3 +151,30 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callb
     if stats["scanned_files"] == 0:
         log_callback(f"No files found in {SOURCE_FOLDER} to organize.")
         print(f"No files found in {SOURCE_FOLDER} to organize.")
+
+def undo_organize_files(moved_files, stats, log_callback):
+    log_callback("\n Undoing file organization...\n")
+    for file_info in moved_files:
+        source = file_info["source"]
+        destination = file_info["destination"]
+
+        try:
+            su.move(destination, source)
+            log_callback(f"Moved {os.path.basename(destination)} back to {source}.")
+           
+        except Exception as error:
+            log_callback(f"Error moving {os.path.basename(destination)} back to {source}: {error}")
+
+    for folder_info in created_folders:
+        folder_path = folder_info["path"]
+        folder_name = folder_info["name"]
+
+        try:
+            os.rmdir(folder_path)
+            log_callback(f"Removed folder: {folder_name}.")
+        except OSError as error:
+            log_callback(f"Error removing folder {folder_name}: {error}")
+
+    log_callback("\n Undoing file organization completed.\n")      
+    print("\nUndo operation completed.")
+    print(f"Files moved back: {stats['moved']}, Errors: {stats['errors']}")

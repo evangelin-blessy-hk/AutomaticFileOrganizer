@@ -94,6 +94,14 @@ class FileOrganizerGUI:
         # Connect the summary box to the scrollbar
         self.summary_box.config(yscrollcommand=self.summary_scrollbar.set)
 
+        self.undo_button = tk.Button(
+            self.window,
+            text="Undo Last Organization",
+            command=self.undo_last_organization,
+            state="disabled"
+        )
+        self.undo_button.pack(pady=5)
+
 
     def disable_organize_button(self):
         self.select_organize_button.config(state="disabled")
@@ -191,6 +199,26 @@ class FileOrganizerGUI:
         self.status_label.config(text="Status: Organization Completed")
         self.disable_organize_button()
         self.display_summary()
+        self.undo_button.config(state="normal")  # Enable the undo button after organizing files
+
+    def undo_last_organization(self):
+
+        # Check if there are any moved files to undo
+        if not organizer.moved_files:
+            messagebox.showinfo(
+                "Undo Not Possible",
+                "No files have been moved yet. Cannot undo."
+            )
+            return
+
+        self.status_label.config(text="Status: Undoing last organization...")
+        organizer.undo_organize_files(organizer.moved_files, organizer.stats, self.log_message)
+        self.status_label.config(text="Status: Undo Completed")
+        self.undo_button.config(state="disabled")  # Disable the undo button after undoing
+        
+        # Clear the moved files list after undoing
+        organizer.moved_files.clear()
+        organizer.created_folders.clear()  # Clear the created folders list after undoing
 
     def run(self):
         self.window.mainloop()

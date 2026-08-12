@@ -40,10 +40,10 @@ The code became much shorter, easier to read, and easier to extend.
 ## Future Versions
 
 ### Version 1.1
-[x] Ignore temporary Office files.
-[x] Ignore directories.
-[x] Handle duplicate filenames.
-[x] Users can input folder to organize
+- [x] Ignore temporary Office files.
+- [x] Ignore directories.
+- [x] Handle duplicate filenames.
+- [x] Users can input folder to organize
 
 ### Version 1.2 – Error Handling
 ### Planned improvements
@@ -120,13 +120,35 @@ Package into an executable using PyInstaller.
 [x] Convert to .exe
 [x] Custom icon
 [x] Installer
-[] Ready for anyone to download
+[x] Ready for anyone to download
 
-### Version 4.0 - Real-world improvements
+### Version 4.0 - Advanced Features
 
-[] Drag & Drop folder
-[] Recursive folder organization
-[] Undo last operation
-[] User-defined categories
-[] Settings saved automatically
+### Version 4.1 - Undo Operation
+[x] Store source + destination
+[x] Move files back
+[x] Disable Undo initially
+[x] Enable Undo after organization
+[x] Clear move history after Undo
+[x] Disable Undo after Undo
+[x] Track folders created by organizer
+[x] Delete only those folders if they are empty
+[x] Clean up Undo statistics
+
+### Version 4.2 - Recursive Folder Organization
+[] Scan subfolders
+[] Ignore organizer-created folders
+[] Organize files from nested directories
+
+### Version 4.3 - Folder Exclusions
+[] Let user choose folders not to organize
+
+### Version 4.4 - Log File
+[] Save organization history to a file
+
+### Version 4.5 - Custom Categories
+[] Allow users to define their own categories
+
+### Version 4.6
+[] Drag & Drop
 [] Dark mode
