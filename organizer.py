@@ -3,21 +3,21 @@ import  shutil as su
 
 # Define file categories based on their extensions
 FILE_CATEGORIES = {
-    ".pdf": "PDFs",
-    ".jpeg": "Images",
-    ".png": "Images",
-    ".jpg": "Images",
-    ".mp3": "Audio",
-    ".wav": "Audio",
-    ".mp4": "Videos",
-    ".mkv": "Videos",
-    ".docx": "Documents",
-    ".txt": "Documents",
-    ".zip": "Compressed",
-    ".rar": "Compressed",
-    ".exe": "Executables",
-    ".xlsx": "Excel",
-    ".csv": "Excel" 
+    ".pdf": "PDFs_AFO",
+    ".jpeg": "Images_AFO",
+    ".png": "Images_AFO",
+    ".jpg": "Images_AFO",
+    ".mp3": "Audio_AFO",
+    ".wav": "Audio_AFO",
+    ".mp4": "Videos_AFO",
+    ".mkv": "Videos_AFO",
+    ".docx": "Documents_AFO",
+    ".txt": "Documents_AFO",
+    ".zip": "Compressed_AFO",
+    ".rar": "Compressed_AFO",
+    ".exe": "Executables_AFO",
+    ".xlsx": "Excel_AFO",
+    ".csv": "Excel_AFO" 
 }
 
 # Track file statistics

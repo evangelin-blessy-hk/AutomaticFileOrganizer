@@ -106,9 +106,14 @@ class FileOrganizerGUI:
     def disable_organize_button(self):
         self.select_organize_button.config(state="disabled")
 
+    def reset_progress_bar(self):
+        self.progress_bar['value'] = 0
+        self.progress_label.config(text="0%")
+        self.window.update_idletasks() # Update the GUI to reflect the progress bar change
+
     # Function to select a folder on the user's computer
     def select_folder(self):
-        folder = filedialog.askdirectory()
+        folder = filedialog.askdirectory() # Open a dialog to select a folder
 
         # Check if user selected a folder or canceled the dialog
         if folder:
@@ -118,8 +123,7 @@ class FileOrganizerGUI:
                 text=f"Selected folder: {folder}"
                 )
             self.disable_organize_button()
-            self.progress_bar['value'] = 0  # Reset progress bar
-            self.progress_label.config(text="0%")
+            self.reset_progress_bar()
             organizer.check_source_folder(self.selected_folder, self.log_message)
             self.start_organizing()
 
@@ -128,8 +132,8 @@ class FileOrganizerGUI:
             self.selected_folder_label.config(
                 text="No folder selected. Please select a folder."
                 )
-            self.progress_bar['value'] = 0  # Reset progress bar
-            self.progress_label.config(text="0%")
+            self.status_label.config(text="Status: Not Ready")
+            self.reset_progress_bar()
 
     # Function to reset the statistics and progress bar
     def reset_stats(self):
@@ -140,7 +144,7 @@ class FileOrganizerGUI:
             "skipped": 0,
             "errors": 0
         }
-        self.progress_bar['value'] = 0
+        self.reset_progress_bar()
         self.log_box.insert(tk.END, "\n-------------------------------------------------------------------------\n")
         self.log_box.see(tk.END)  # Scroll to the end
 
@@ -209,6 +213,9 @@ class FileOrganizerGUI:
                 "Undo Not Possible",
                 "No files have been moved yet. Cannot undo."
             )
+            self.status_label.config(text="Status: Undo Not Possible")
+            self.undo_button.config(state="disabled")  # Disable the undo button if no files to undo
+            self.reset_progress_bar()  # Reset the progress bar since no files were moved
             return
 
         self.status_label.config(text="Status: Undoing last organization...")
