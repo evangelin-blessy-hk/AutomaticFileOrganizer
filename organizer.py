@@ -3,21 +3,14 @@ import  shutil as su
 
 # Define file categories based on their extensions
 FILE_CATEGORIES = {
-    ".pdf": "PDFs_AFO",
-    ".jpeg": "Images_AFO",
-    ".png": "Images_AFO",
-    ".jpg": "Images_AFO",
-    ".mp3": "Audio_AFO",
-    ".wav": "Audio_AFO",
-    ".mp4": "Videos_AFO",
-    ".mkv": "Videos_AFO",
-    ".docx": "Documents_AFO",
-    ".txt": "Documents_AFO",
-    ".zip": "Compressed_AFO",
-    ".rar": "Compressed_AFO",
-    ".exe": "Executables_AFO",
-    ".xlsx": "Excel_AFO",
-    ".csv": "Excel_AFO" 
+    "PDFs_AFO": [".pdf"],
+    "Images_AFO": [".jpeg", ".png", ".jpg"],
+    "Audio_AFO": [".mp3", ".wav"],
+    "Videos_AFO": [".mp4", ".mkv"],
+    "Documents_AFO": [".docx", ".txt"],
+    "Compressed_AFO": [".zip", ".rar"],
+    "Executables_AFO": [".exe"],
+    "Excel_AFO": [".xlsx", ".csv"]
 }
 
 # Track file statistics
@@ -88,7 +81,6 @@ def move_file(source_folder, filename, folder_path,  stats, log_callback):
         # print(f"Error moving file {filename}: {error}") 
         stats["errors"] += 1
 
-
 # Organize files in the source folder based on their extensions
 def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callback=None, total_files_callback=None):
 
@@ -117,34 +109,37 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callb
         # splitext() returns (filename, extension); [1] gets the extension
         file_extension = os.path.splitext(filename)[1]  
 
-        # Check if the file extension is in the defined categories
-        if file_extension in FILE_CATEGORIES:
-            folder_name = FILE_CATEGORIES[file_extension]
-            folder_path = os.path.join(SOURCE_FOLDER, folder_name)
+        found_category = False  # Flag to check if the file extension matches any category
 
-            # Create the folder if it doesn't exist
-            if not os.path.exists(folder_path):
-                if not create_folder(folder_path, folder_name, log_callback):
+        # Check the file extension against the defined categories and move the file accordingly
+        for folder_name, extensions in FILE_CATEGORIES.items():
+            if file_extension in extensions:
+                found_category = True
+                folder_path = os.path.join(SOURCE_FOLDER, folder_name)
+
+                # Create the folder if it doesn't exist
+                if not os.path.exists(folder_path):
+                    if not create_folder(folder_path, folder_name, log_callback):
+                        stats["skipped"] += 1
+                        log_callback(f"Error creating folder {folder_name}. Skipping {filename}.")
+                        # print(f"Error creating folder {folder_name}. Skipping {filename}.")
+                        continue  # Skip moving the file if folder creation failed
+
+                # Handling duplicate files by checking if the file already exists in the destination folder
+                if os.path.exists(os.path.join(folder_path, filename)):
+                    log_callback(f"File {filename} already exists in {folder_path}. Skipping.")
+                    # print(f"File {filename} already exists in {folder_path}. Skipping.")
                     stats["skipped"] += 1
-                    log_callback(f"Error creating folder {folder_name}. Skipping {filename}.")
-                    # print(f"Error creating folder {folder_name}. Skipping {filename}.")
-                    continue  # Skip moving the file if folder creation failed
-
-            # Handling duplicate files by checking if the file already exists in the destination folder
-            if os.path.exists(os.path.join(folder_path, filename)):
-                log_callback(f"File {filename} already exists in {folder_path}. Skipping.")
-                # print(f"File {filename} already exists in {folder_path}. Skipping.")
-                stats["skipped"] += 1
-            else:
-                # Move the file to the appropriate folder
-                move_file(SOURCE_FOLDER, filename, folder_path, stats, log_callback)
+                else:
+                    # Move the file to the appropriate folder
+                    move_file(SOURCE_FOLDER, filename, folder_path, stats, log_callback)
 
         # If the file extension is not recognized, skip the file
-        else:
+        if not found_category:
             stats["skipped"] += 1
             log_callback(f"File {filename} has an unrecognized extension. Skipping.")
             # print(f"File {filename} has an unrecognized extension. Skipping.")
-        
+    
         progress_callback()  # Update progress after each file is processed
 
     # If no files were scanned, log a message indicating that no files were found
@@ -154,21 +149,19 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callb
 
 def undo_organize_files(moved_files, stats, log_callback):
     log_callback("\n Undoing file organization...\n")
+
     for file_info in moved_files:
         source = file_info["source"]
         destination = file_info["destination"]
-
         try:
             su.move(destination, source)
-            log_callback(f"Moved {os.path.basename(destination)} back to {source}.")
-           
+            log_callback(f"Moved {os.path.basename(destination)} back to {source}.") 
         except Exception as error:
             log_callback(f"Error moving {os.path.basename(destination)} back to {source}: {error}")
 
     for folder_info in created_folders:
         folder_path = folder_info["path"]
         folder_name = folder_info["name"]
-
         try:
             os.rmdir(folder_path)
             log_callback(f"Removed folder: {folder_name}.")
