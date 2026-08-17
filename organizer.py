@@ -81,40 +81,51 @@ def move_file(source_folder, filename, folder_path,  stats, log_callback):
         # print(f"Error moving file {filename}: {error}") 
         stats["errors"] += 1
 
-# Organize files in the source folder based on their extensions
-def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callback=None, total_files_callback=None):
-
-    # Get a list of all files in the source folder
-    files = os.listdir(SOURCE_FOLDER)
-    print(f"Total files found in {SOURCE_FOLDER}: {len(files)}")
-
-    total_files_callback(len(files))  # Update the total number of files to process
+# Scan the source folder to count the total number of files (excluding hidden and temporary files)
+def scan_folder(SOURCE_FOLDER):
+    total_files = 0
    
-    # Iterate through each file in the source folder
-    for filename in files:
+    for root, dirs, files in os.walk(SOURCE_FOLDER):
+        dirs[:] = [folder for folder in dirs if not folder.endswith("_AFO")]
+        for filename in files:
+            if filename.startswith('.') or filename.startswith('~'):
+                continue
+            total_files += 1
+    return total_files  # Return total files 
 
-        # Skip hidden files and temporary files (starting with '.' or '~')
-        if filename.startswith('.') or filename.startswith('~'):
-            progress_callback()
-            continue
+# Get the category for a given file extension
+def get_category_for_extension(file_extension):
+    for folder_name, extensions in FILE_CATEGORIES.items():
+        if file_extension in extensions:
+            return folder_name
+    return None  # Return None if the extension is not recognized
 
-        # Check if the item is a directory or a file
-        if os.path.isdir(os.path.join(SOURCE_FOLDER, filename)):
-            progress_callback()
-            stats["scanned_folders"] += 1
-            continue    
-        else:   
-            stats["scanned_files"] += 1
+# Organize files in the source folder based on their extensions
+def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callback=None, 
+                   total_files_callback=None):
 
-        # splitext() returns (filename, extension); [1] gets the extension
-        file_extension = os.path.splitext(filename)[1]  
+    total_files = scan_folder(SOURCE_FOLDER)
+   
+    total_files_callback(total_files)  # Update the total number of files to process
 
-        found_category = False  # Flag to check if the file extension matches any category
+    for root, dirs, files in os.walk(SOURCE_FOLDER):
+        dirs[:] = [folder for folder in dirs if not folder.endswith("_AFO")]
 
-        # Check the file extension against the defined categories and move the file accordingly
-        for folder_name, extensions in FILE_CATEGORIES.items():
-            if file_extension in extensions:
-                found_category = True
+        # Iterate through each file in the source folder
+        for filename in files:
+            # Skip hidden files and temporary files (starting with '.' or '~')
+            if filename.startswith('.') or filename.startswith('~'):
+                progress_callback()
+                continue
+            else:   
+                stats["scanned_files"] += 1
+
+            # splitext() returns (filename, extension); [1] gets the extension
+            file_extension = os.path.splitext(filename)[1].lower()
+
+            folder_name = get_category_for_extension(file_extension)
+
+            if folder_name != None:
                 folder_path = os.path.join(SOURCE_FOLDER, folder_name)
 
                 # Create the folder if it doesn't exist
@@ -132,15 +143,15 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callb
                     stats["skipped"] += 1
                 else:
                     # Move the file to the appropriate folder
-                    move_file(SOURCE_FOLDER, filename, folder_path, stats, log_callback)
+                    move_file(root, filename, folder_path, stats, log_callback)
 
-        # If the file extension is not recognized, skip the file
-        if not found_category:
-            stats["skipped"] += 1
-            log_callback(f"File {filename} has an unrecognized extension. Skipping.")
-            # print(f"File {filename} has an unrecognized extension. Skipping.")
-    
-        progress_callback()  # Update progress after each file is processed
+            # If the file extension is not recognized, skip the file
+            else:
+                stats["skipped"] += 1
+                log_callback(f"File {filename} has an unrecognized extension. Skipping.")
+                # print(f"File {filename} has an unrecognized extension. Skipping.")
+        
+            progress_callback()  # Update progress after each file is processed
 
     # If no files were scanned, log a message indicating that no files were found
     if stats["scanned_files"] == 0:
