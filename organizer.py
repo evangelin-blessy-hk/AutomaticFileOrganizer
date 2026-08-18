@@ -100,6 +100,24 @@ def get_category_for_extension(file_extension):
             return folder_name
     return None  # Return None if the extension is not recognized
 
+def delete_empty_folders(SOURCE_FOLDER):
+        for root, folders, files in os.walk(SOURCE_FOLDER, topdown=False):
+            if root == SOURCE_FOLDER:
+                continue
+
+            if root.endswith("_AFO"):
+                continue
+
+            if not os.listdir(root):
+                folder_path = os.path.join(root)
+                print(folder_path)
+                try:
+                    os.rmdir(folder_path)
+                    print(f"Removed folder empty folder: {root}.")
+                except OSError as error:
+                    print(f"Error removing folder {root}: {error}")
+                
+
 # Organize files in the source folder based on their extensions
 def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callback=None, 
                    total_files_callback=None):
@@ -158,9 +176,12 @@ def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callb
         log_callback(f"No files found in {SOURCE_FOLDER} to organize.")
         print(f"No files found in {SOURCE_FOLDER} to organize.")
 
+    delete_empty_folders(SOURCE_FOLDER)
+
 def undo_organize_files(moved_files, stats, log_callback):
     log_callback("\n Undoing file organization...\n")
-
+    print(f"Moved Files: {moved_files}\n")
+    print(f"Created Folders: {created_folders}")
     for file_info in moved_files:
         source = file_info["source"]
         destination = file_info["destination"]
