@@ -26,6 +26,8 @@ moved_files = []  # List to track moved files
 
 created_folders = []  # List to track created folders
 
+deleted_folders = []
+
 # Check if the source folder exists
 def check_source_folder(SOURCE_FOLDER, log_callback):
 
@@ -105,15 +107,14 @@ def delete_empty_folders(SOURCE_FOLDER):
             if root == SOURCE_FOLDER:
                 continue
 
-            if root.endswith("_AFO"):
+            if os.path.basename(root).endswith("_AFO"):
                 continue
 
             if not os.listdir(root):
-                folder_path = os.path.join(root)
-                print(folder_path)
                 try:
-                    os.rmdir(folder_path)
+                    os.rmdir(root)
                     print(f"Removed folder empty folder: {root}.")
+                    deleted_folders.append({"path": root})
                 except OSError as error:
                     print(f"Error removing folder {root}: {error}")
                 
@@ -182,13 +183,18 @@ def undo_organize_files(moved_files, stats, log_callback):
     log_callback("\n Undoing file organization...\n")
     print(f"Moved Files: {moved_files}\n")
     print(f"Created Folders: {created_folders}")
+
     for file_info in moved_files:
         source = file_info["source"]
         destination = file_info["destination"]
+
         try:
+            # Recreate the original folder structure
+            os.makedirs(os.path.dirname(source), exist_ok=True)
             su.move(destination, source)
-            log_callback(f"Moved {os.path.basename(destination)} back to {source}.") 
+            log_callback(f"Moved {os.path.basename(destination)} back to {source}.")
         except Exception as error:
+            print(f"Error undoing {source} folder: {error}")
             log_callback(f"Error moving {os.path.basename(destination)} back to {source}: {error}")
 
     for folder_info in created_folders:
@@ -199,6 +205,17 @@ def undo_organize_files(moved_files, stats, log_callback):
             log_callback(f"Removed folder: {folder_name}.")
         except OSError as error:
             log_callback(f"Error removing folder {folder_name}: {error}")
+
+    # Creating the deleted empty folder
+    for deleted_folder in deleted_folders:
+        # print(deleted_folder)
+        folder_info = deleted_folder["path"]
+        if not os.path.exists(folder_info):
+            try:
+                os.makedirs(folder_info, exist_ok=True)
+                log_callback(f"Created folder {folder_info}")
+            except Exception as error:
+                log_callback(f"Error creating {folder_info}: {error}")
 
     log_callback("\n Undoing file organization completed.\n")      
     print("\nUndo operation completed.")
