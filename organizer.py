@@ -117,8 +117,8 @@ def delete_empty_folders(SOURCE_FOLDER):
                     deleted_folders.append({"path": root})
                 except OSError as error:
                     print(f"Error removing folder {root}: {error}")
-                
 
+                
 # Organize files in the source folder based on their extensions
 def organize_files(SOURCE_FOLDER, stats=stats, log_callback=None, progress_callback=None, 
                    total_files_callback=None):

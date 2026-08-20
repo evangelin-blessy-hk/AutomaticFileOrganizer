@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-import organizer
+import organizer, os
 
 class FileOrganizerGUI:
 
@@ -9,57 +9,112 @@ class FileOrganizerGUI:
         self.window.title("Automatic File Organizer")
         self.window.geometry("1000x700")
 
+        # Create canvas
+        self.canvas = tk.Canvas(self.window)
+
+        # Create scrollbar for the canvas
+        self.main_scrollbar = tk.Scrollbar(
+            self.window,
+            orient="vertical",
+            command=self.canvas.yview
+        )
+        self.main_scrollbar.pack(
+            side=tk.RIGHT,
+            fill=tk.Y
+        )
+
+        self.canvas.pack(
+            side=tk.LEFT,
+            fill=tk.BOTH,
+            expand=True
+        )
+
+        # Connect canvas to scrollbar
+        self.canvas.configure(
+            yscrollcommand=self.main_scrollbar.set
+        )
+
+        # Frame that will contain all your widgets
+        self.main_frame = tk.Frame(
+            self.canvas,
+            bd=2,
+            relief=tk.GROOVE
+        )
+
+        # Put main_frame inside canvas
+        self.canvas_window = self.canvas.create_window(
+            (0, 0),
+            window=self.main_frame,
+            anchor="nw"
+        )
+
+        self.canvas.bind(
+            "<Configure>",
+            self.resize_main_frame
+        )
+
+        # Update scrollable region when frame changes size
+        self.main_frame.bind(
+            "<Configure>",
+            lambda event: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
+            )
+        )
+
         # Create a label for the title
         self.title_label = tk.Label(
-            self.window, 
+            self.main_frame, 
             text="Automatic File Organizer"
             )
         self.title_label.config(font=("Arial", 15))
         self.title_label.pack(pady=15) 
 
         self.select_folder_label = tk.Label(
-            self.window, 
+            self.main_frame, 
             text="Select a folder to organize:"
             )
         self.select_folder_label.pack(pady=(15, 5))
 
         self.select_folder_button = tk.Button(
-            self.window, 
+            self.main_frame, 
             text="Select Folder", 
             command=self.select_folder
             )
         self.select_folder_button.pack(pady=5)
 
         self.selected_folder_label = tk.Label(
-            self.window, 
+            self.main_frame, 
             text=""
             )
         self.selected_folder_label.pack(pady=5)
 
+        self.folder_tree = ttk.Treeview(self.main_frame, height=12)
+        self.folder_tree.pack(pady=10)
+
         self.select_organize_button = tk.Button(
-                    self.window,
+                    self.main_frame,
                     text="Start Organizing",
                     command=self.organize_and_summarize,
                     state="disabled"
                 )
         self.select_organize_button.pack(pady=(25,5))
 
-        self.status_label = tk.Label(self.window, text="")
+        self.status_label = tk.Label(self.main_frame, text="")
         self.status_label.pack(pady=5)
 
         self.progress_bar = ttk.Progressbar(
-                    self.window,
+                    self.main_frame,
                     orient="horizontal",
                     length=400,
                     mode="determinate"
                 )
         self.progress_bar.pack(pady=5)
 
-        self.progress_label = tk.Label(self.window, text="0%")
+        self.progress_label = tk.Label(self.main_frame, text="0%")
         self.progress_label.pack(pady=1)
 
         # Create a frame to hold the log box and scrollbar
-        self.log_frame = tk.Frame(self.window, bd=2, relief=tk.GROOVE)
+        self.log_frame = tk.Frame(self.main_frame, bd=2, relief=tk.GROOVE)
         self.log_frame.pack(pady=10)
 
         # Create the log box
@@ -77,7 +132,7 @@ class FileOrganizerGUI:
         self.log_box.config(yscrollcommand=self.log_scrollbar.set)
 
          # Create a frame to hold the summary box and scrollbar
-        self.summary_frame = tk.Frame(self.window, bd=2, relief=tk.GROOVE)
+        self.summary_frame = tk.Frame(self.main_frame, bd=2, relief=tk.GROOVE)
         self.summary_frame.pack(pady=10)
 
          # Create the summary box
@@ -95,12 +150,61 @@ class FileOrganizerGUI:
         self.summary_box.config(yscrollcommand=self.summary_scrollbar.set)
 
         self.undo_button = tk.Button(
-            self.window,
+            self.main_frame,
             text="Undo Last Organization",
             command=self.undo_last_organization,
             state="disabled"
         )
         self.undo_button.pack(pady=5)
+
+        self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
+
+    def resize_main_frame(self, event):
+        self.canvas.itemconfig(
+            self.canvas_window,
+            width=event.width
+        )
+
+    def on_mousewheel(self, event):
+        self.canvas.yview_scroll(
+            int(-1 * (event.delta / 120)),
+            "units"
+        )
+
+    def display_folder_tree(self, source_folder):
+
+        # Clear existing tree
+        for item in self.folder_tree.get_children():
+            self.folder_tree.delete(item)
+
+        # Add source folder
+        root_id = self.folder_tree.insert(
+            "",
+            "end",
+            text=f"📁 {os.path.basename(source_folder)}"
+        )
+
+        # Keep track of Treeview IDs
+        tree_items = {
+            source_folder: root_id
+        }
+
+        # Walk through the folder structure
+        for root, folders, files in os.walk(source_folder):
+
+            parent_id = tree_items[root]
+
+            for folder in folders:
+
+                folder_path = os.path.join(root, folder)
+
+                folder_id = self.folder_tree.insert(
+                    parent_id,
+                    "end",
+                    text=f"☐ 📁 {folder}"
+                )
+
+                tree_items[folder_path] = folder_id
 
 
     def disable_organize_button(self):
@@ -109,7 +213,7 @@ class FileOrganizerGUI:
     def reset_progress_bar(self):
         self.progress_bar['value'] = 0
         self.progress_label.config(text="0%")
-        self.window.update_idletasks() # Update the GUI to reflect the progress bar change
+        self.main_frame.update_idletasks() # Update the GUI to reflect the progress bar change
 
     # Function to select a folder on the user's computer
     def select_folder(self):
@@ -153,6 +257,7 @@ class FileOrganizerGUI:
         self.selected_folder_label.config(
             text=f"Organizing files in: {self.selected_folder}"
         )
+        self.display_folder_tree(self.selected_folder)
         self.select_organize_button.config(state="normal")
         self.status_label.config(text="Status: Ready")
 
@@ -190,11 +295,11 @@ class FileOrganizerGUI:
         self.progress_label.config(
             text=f"{percentage:.0f}%"
         )
-        self.window.update_idletasks() # Update the GUI to reflect the progress bar change
+        self.main_frame.update_idletasks() # Update the GUI to reflect the progress bar change
 
     def set_progress_maximum(self, total_files):
         self.progress_bar['maximum'] = total_files
-        self.window.update_idletasks() # Update the GUI to reflect the progress bar change
+        self.main_frame.update_idletasks() # Update the GUI to reflect the progress bar change
 
     def organize_and_summarize(self):
         self.status_label.config(text="Status: Organizing...")
@@ -208,7 +313,7 @@ class FileOrganizerGUI:
     def undo_last_organization(self):
 
         # Check if there are any moved files to undo
-        if not organizer.moved_files:
+        if not organizer.moved_files and not organizer.deleted_folders:
             messagebox.showinfo(
                 "Undo Not Possible",
                 "No files have been moved yet. Cannot undo."
